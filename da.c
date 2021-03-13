@@ -133,7 +133,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    closedir(directory);
     char *pDirectory = options.directory;
 
     // parent Directory from the user input
@@ -153,7 +152,9 @@ int main(int argc, char *argv[])
         elist_sort(list, file_sz_comparator);
     }
 
-    struct item_details *f = malloc(sizeof(struct item_details));
+    closedir(directory);
+    
+    struct item_details *f;
     
     /* check whether the user set limit
      * if the user set limit then print based on the specified limit
@@ -192,11 +193,21 @@ int main(int argc, char *argv[])
         i++;
     }
    
-    free(f);
+    
     elist_destroy(list);
 
     return 0;
 }
+
+/**
+ * Recursively getting the files from sub-directories
+ * until it reach the end of sub-directories
+ * Then add it to item_details struct
+ * Lastly put it in the list
+ *
+ * @param buf path the path to be traversed
+ * @param list The list to copy the struct into
+ */
 
 void fileTraversal(char *path, struct elist *list) {
     // LOG("%s\n", path);
@@ -244,6 +255,16 @@ void fileTraversal(char *path, struct elist *list) {
     closedir(d);
 }
 
+/**
+ * Help function to accomodate qsort
+ * This comparator is comparing two file sizes (off_t)
+ *
+ * @param a first element to compare
+ * @param b second element to compare
+ *
+ * @return the comparison between the two parameters
+ */
+
 int file_sz_comparator(const void *a, const void *b) {
     const struct item_details *x = a;
     const struct item_details *y = b;
@@ -252,12 +273,18 @@ int file_sz_comparator(const void *a, const void *b) {
 
 }
 
+/**
+ * Help function to accomodate qsort.
+ * This comparator is comparing time_t between 2 files (last accessed)
+ *
+ * @param a first element to compare
+ * @param b second element to cmpare
+ *
+ * @return the comparison between the two parameters
+ */
 int file_tm_comparator(const void *a, const void *b) {
     const struct item_details *x = a;
     const struct item_details *y = b;
 
-    //int comp = (int)(difftime(x->file_date, y->file_date));
-
     return (int)(x->file_date > y->file_date);
-    //return comp;
 }
