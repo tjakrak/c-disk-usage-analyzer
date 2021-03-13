@@ -7,9 +7,9 @@
 void human_readable_size(char *buf, size_t buf_sz, double size, unsigned int decimals)
 {
     
-    if (buf_sz - 6 < decimals) {
-        decimals = buf_sz;
-    }
+//    if (buf_sz - 6 < decimals) {
+//        decimals = buf_sz;
+//    }
 
     double converted = size;
 
@@ -20,24 +20,26 @@ void human_readable_size(char *buf, size_t buf_sz, double size, unsigned int dec
         pow++;
     }
 
-    char unit[4];
-    if (pow >= 7) {
-        strcpy(unit, "ZiB");
-    } else if (pow >= 5) {
-        strcpy(unit, "PiB");
-    } else if (pow >= 4) {
-        strcpy(unit, "TiB");
-    } else if (pow >= 3) {
-        strcpy(unit, "GiB");
-    } else if (pow >= 2) {
-        strcpy(unit, "MiB");
-    } else if (pow >= 1) {
-        strcpy(unit, "KiB");
-    } else {
-        strcpy(unit, "B");
-    }
+    const char *unit[] = {"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB"};
+
+//    char unit[4];
+//    if (pow >= 7) {
+//        strcpy(unit, "ZiB");
+//    } else if (pow >= 5) {
+//        strcpy(unit, "PiB");
+//    } else if (pow >= 4) {
+//        strcpy(unit, "TiB");
+//    } else if (pow >= 3) {
+//        strcpy(unit, "GiB");
+//    } else if (pow >= 2) {
+//        strcpy(unit, "MiB");
+//    } else if (pow >= 1) {
+//        strcpy(unit, "KiB");
+//    } else {
+//        strcpy(unit, "B");
+//    }
     
-    snprintf(buf, buf_sz, " %.*f %s", decimals, converted, unit);
+    snprintf(buf, buf_sz, " %.*f %s", decimals, converted, unit[pow]);
 
 }
 

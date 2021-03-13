@@ -64,8 +64,13 @@ void elist_destroy(struct elist *list)
 
 int elist_set_capacity(struct elist *list, size_t capacity)
 {
-    list->element_storage = realloc(list->element_storage, capacity * list->item_sz);
-    
+    if (capacity == 0) {
+        capacity = 1;
+        elist_clear(list);
+    }
+
+    list->element_storage = realloc(list->element_storage, (capacity) * list->item_sz);
+
     if (list->element_storage == NULL) {
         return -1;
     }
@@ -76,8 +81,10 @@ int elist_set_capacity(struct elist *list, size_t capacity)
 
     list->capacity = capacity;
     
-    LOG("Setting capacity: capacity = [%zu], item_sz = [%zu]\n",
+    LOG("Setting capacity: list->capacity = [%zu], capacity = [%zu], size = [%zu], item_sz = [%zu]\n",
             list->capacity,
+            capacity,
+            list->size,
             list->item_sz);
 
     return 0;
@@ -90,20 +97,31 @@ size_t elist_capacity(struct elist *list)
 
 ssize_t elist_add(struct elist *list, void *item)
 {
-    if (list->size >= list->capacity) {
-        //TODO resize it
-        list->capacity = list->capacity * RESIZE_MULTIPLIER;
-        list->element_storage = realloc(list->element_storage, list->capacity * list->item_sz);
+    if (list->capacity == 0) {
+        list->capacity = DEFAULT_INIT_SZ;
+    }
 
-        if (list->element_storage == NULL) {
-            return -1;
-        }
+    if (list->size >= list->capacity) {
+        //TODO resize it 
+        list->capacity = list->capacity * RESIZE_MULTIPLIER;
+        elist_set_capacity(list, list->capacity);
+    }
+
+    if (list->element_storage == NULL) {
+        return -1;
     }
 
     size_t idx = list->size;
     list->size++;
+    
+    //LOG("elist_add: capacity = [%zu], size = [%zu] item_sz = [%zu]\n",
+    //        list->capacity,
+    //        list->size,
+    //        list->item_sz);
+
     void *item_ptr = list->element_storage + idx * list->item_sz;
     memcpy(item_ptr, item, list->item_sz);
+
     return idx;
 }
 
@@ -205,4 +223,3 @@ bool idx_is_valid(struct elist *list, size_t idx)
     }
     return false;
 }
-
