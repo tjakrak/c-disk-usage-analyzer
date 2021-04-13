@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     }
     LOG("Display columns: %d\n", cols);
 
-    LOG("time: %zu, off_t: %zu\n", sizeof(time_t), sizeof(off_t));
+    //LOG("time: %zu, off_t: %zu\n", sizeof(time_t), sizeof(off_t));
 
     /* TODO:
      *  - check to ensure the directory actually exists
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
      */
       
     DIR *directory;
-    struct elist *list = elist_create(0, sizeof(struct item_details));
+    struct elist *list = elist_create(10, sizeof(struct item_details));
 
     if ((directory = opendir(options.directory)) == NULL) {
         perror("opendir");
@@ -154,7 +154,8 @@ int main(int argc, char *argv[])
 
     closedir(directory);
     
-    struct item_details *f;
+    //struct item_details *f;
+    struct item_details *f = malloc(sizeof(struct item_details));
     
     /* check whether the user set limit
      * if the user set limit then print based on the specified limit
@@ -169,7 +170,8 @@ int main(int argc, char *argv[])
     int i = 0;
     // iterating to print from dynamic array (list))
     while (i < numOfItems) {
-        f = elist_get(list, i);
+        f = memcpy(f, elist_get(list, i), sizeof(struct item_details));
+        //f = elist_get(list, i);
         char readable_sz[14];
         char last_accessed[15];
         // convert file_sz to KiB, MiB, GiB, ZiB and to string
@@ -191,9 +193,10 @@ int main(int argc, char *argv[])
 
         // incrementing index
         i++;
+
     }
-   
-    
+  
+    free(f);
     elist_destroy(list);
 
     return 0;
@@ -233,7 +236,7 @@ void fileTraversal(char *path, struct elist *list) {
 
             /* if we reach at the end of the file where it does not have another directories
              * we are storing the information to the struct and add them to the list*/
-            if (opendir(newPath) == NULL) {
+            if (de->d_type == DT_REG) {
                 
                 // getting the stats from the file (time, size, etc)
                 stat(newPath, &stats);
@@ -245,10 +248,11 @@ void fileTraversal(char *path, struct elist *list) {
 
                 // put info struct to the elastic array list
                 elist_add(list, &info);
+    
+            } else if (de->d_type == DT_DIR) {
+                // recursively getting all the files inside the files and so on....
+                fileTraversal(newPath, list);
             }
-
-            // recursively getting all the files inside the files and so on....
-            fileTraversal(newPath, list);
         }
     }
  
@@ -263,7 +267,7 @@ void fileTraversal(char *path, struct elist *list) {
  * @param b second element to compare
  *
  * @return the comparison between the two parameters
- */
+xy */
 
 int file_sz_comparator(const void *a, const void *b) {
     const struct item_details *x = a;

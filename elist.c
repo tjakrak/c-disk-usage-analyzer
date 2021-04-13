@@ -121,7 +121,7 @@ ssize_t elist_add(struct elist *list, void *item)
 
     void *item_ptr = list->element_storage + idx * list->item_sz;
     memcpy(item_ptr, item, list->item_sz);
-
+    
     return idx;
 }
 
@@ -166,6 +166,7 @@ void *elist_get(struct elist *list, size_t idx)
 
 size_t elist_size(struct elist *list)
 {
+    LOG("%zu\n", list->size);
     return list->size;
 }
 
@@ -212,7 +213,6 @@ ssize_t elist_index_of(struct elist *list, void *item)
 
 void elist_sort(struct elist *list, int (*comparator)(const void *, const void *))
 {
-
     qsort(list->element_storage, list->size, list->item_sz, comparator);
 }
 

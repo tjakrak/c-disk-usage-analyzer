@@ -38,4 +38,5 @@ size_t simple_time_format(char *buf, size_t buf_sz, time_t time)
     } else {
         return l;
     }
+
 }
