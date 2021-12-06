@@ -1,8 +1,4 @@
-# Project 1
-
-See spec here: https://www.cs.usfca.edu/~mmalensek/cs521/assignments/project-1.html
-
-# Project 1: Elastic Array & Disk Usage Analyzer
+# Elastic Array & Disk Usage Analyzer
 
 ## What this program do?
 This program is taking a <i>path directory</i> as an input and it will sort and print out all the files from the directory specified by the user. Including the files' size and last access date.
@@ -57,3 +53,5 @@ To read the directory and get disk usage analysis, we are recurisvely read direc
 ```make test``` - To test the whole tests
 ```make test run=x``` - To test specific case of x, where x is the test number
 ```make test run={x, y, ..., z}``` - To test few specific cases where {x, y, ...., z} is the test number
+
+Link: https://www.cs.usfca.edu/~mmalensek/cs521/assignments/project-1.html
